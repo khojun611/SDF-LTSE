@@ -4,4 +4,4 @@
 
 ## Weight 파일 다운로드
 
-[여기](https://drive.google.com/your-weight-file-url)에서 weight 파일을 다운로드할 수 있습니다.
+[여기](https://drive.google.com/file/d/1cxCjWTnu2ezuRx6jD8gs7SNOKoWjvFm1/view?usp=sharing)에서 weight 파일을 다운로드할 수 있습니다.

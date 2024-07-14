@@ -35,10 +35,10 @@ from detectron2.utils.visualizer import ColorMode
 import natsort
 
 # Define the paths as variables
-weight_path = "/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/output/model_0039999.pth"
-config_file = "/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/configs/SemanticSegmentation/pointrend_semantic_R_101_FPN_1x_cityscapes.yaml"
-image_path = "/home/user/text_inr/detectron2/projects/PointRend/datasets/textseg/test"
-save_path = "/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/new_quantitative/api"
+weight_path = "/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/output/model_0039999.pth" # 디은빋은 weight 파일 경로
+config_file = "./projects/PointRend/configs/SemanticSegmentation/pointrend_semantic_R_101_FPN_1x_cityscapes.yaml" # config 파일 경로, 고정경로로 수정 X
+image_path = "/home/user/text_inr/detectron2/projects/PointRend/datasets/textseg/test" # 이미지 파일 경로
+save_path = "/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/new_quantitative/api" # 저장 파일 경로
 
 cfg = get_cfg()
 # Add PointRend-specific config
