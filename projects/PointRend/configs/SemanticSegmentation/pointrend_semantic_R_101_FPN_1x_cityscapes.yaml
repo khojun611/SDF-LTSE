@@ -1,0 +1,35 @@
+_BASE_: Base-PointRend-Semantic-FPN.yaml
+MODEL:
+  BACKBONE: 
+    FREEZE_AT: 2
+  WEIGHTS: /home/user/text_inr/pointrend2/pointrend/projects/PointRend/output_attention/model_0019999.pth
+  RESNETS:
+    DEPTH: 101
+  SEM_SEG_HEAD:
+    NUM_CLASSES: 2
+  POINT_HEAD:
+    NUM_CLASSES: 2
+    TRAIN_NUM_POINTS: 2048
+    SUBDIVISION_NUM_POINTS: 8196
+DATASETS:
+  TRAIN: ("Textseg_sem_train",) # ("cityscapes_fine_sem_seg_train",)
+  TEST: ("Textseg_sem_test",) # ("cityscapes_fine_sem_seg_val",)
+SOLVER:
+  BASE_LR: 0.0005
+  STEPS: (40000, 55000)
+  MAX_ITER: 90000
+  IMS_PER_BATCH: 16
+INPUT:
+  MIN_SIZE_TRAIN: (512, 768, 1024, 1280, 1536, 1792, 2048)
+  MIN_SIZE_TRAIN_SAMPLING: "choice"
+  MIN_SIZE_TEST: 1024
+  MAX_SIZE_TRAIN: 4096
+  MAX_SIZE_TEST: 2048
+  CROP:
+    ENABLED: True
+    TYPE: "absolute"
+    SIZE: (512, 1024)
+    SINGLE_CATEGORY_MAX_AREA: 0.75
+  COLOR_AUG_SSD: True
+DATALOADER:
+  NUM_WORKERS: 10
