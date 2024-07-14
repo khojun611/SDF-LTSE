@@ -521,15 +521,15 @@ class PointRendSemSegHead(nn.Module):
 
             attention2 = None
             coarse_sem_seg_logits = self.coarse_sem_seg_head.layers(features,attention2)
-            """
+            
             sdf = torch.argmax(coarse_sem_seg_logits, dim=1)
             sdf = self.calculate_sdf_normalization3(sdf).cuda()
-            print("sdf shape", sdf.shape)
+            # print("sdf shape", sdf.shape)
             attention2 = F.interpolate(sdf.unsqueeze(0), 
                 size=p2.size()[-2:], mode='bilinear', align_corners=False)
             coarse_sem_seg_logits2 = self.coarse_sem_seg_head.layers2(features,attention2)
-            print("attention2",attention2.size())
-            """
+            # print("attention2",attention2.size())
+            
             sem_seg_logits = coarse_sem_seg_logits.clone()
             
             
@@ -552,91 +552,17 @@ class PointRendSemSegHead(nn.Module):
                     sem_seg_logits, scale_factor=2, mode="bilinear", align_corners=False
                 )
 
-
-                
-                # print("sem_seg_logit shape",sem_seg_logits.shape)
-                """
-                outputs = torch.argmax(sem_seg_logits[0],dim=0)
-                # print("output shape",outputs.shape)
-                label = np.array(outputs.cpu())
-                label = np.where(label==1,255,label)
-                png = Image.fromarray(label.astype(np.uint8)).convert('P')
-                png.save("/home/user/text_inr/detectron2/projects/PointRend/lr_images/yesim/bilinear/c00703.png")
-                """
-                
-                """
-                print("sem_seg_logit shape",sem_seg_logits.shape)
-                probs = F.softmax(sem_seg_logits,dim=1).cpu()
-                probs_np = probs[0, 1].detach().numpy()
-                plt.imshow(probs_np, cmap='jet')
-                plt.colorbar()
-                plt.savefig("/home/user/text_inr/detectron2/projects/PointRend/new_test/logit/fore_a00003.png")
-                plt.close()
-                
-                probs_np2 = probs[0, 0].detach().numpy()
-                plt.imshow(probs_np2, cmap='jet')
-                plt.colorbar()
-                plt.savefig("/home/user/text_inr/detectron2/projects/PointRend/new_test/logit/back_a00003.png")
-                plt.close()
-                """
-                # print("sem seg logit shape",sem_seg_logits.shape)
-                # sem_map = sem_seg_logits[0][1]
-                # back_map = sem_seg_logits[0][0]
-                # print("output", outputs.shape)
-                # sem_img = transform(sem_map)
-                # sem_pro = np.array(sem_img)# *255
-                # back_img = transform(back_map)
-                # back_pro = np.array(back_img)# *255
-                # print("sem_pro shape",sem_pro.shape)
-                # print("sem_pro_255",np.where(sem_pro > 255))
-                
-        
-                """
-                sem_pro_img = Image.fromarray(sem_pro.astype(np.uint8),mode="L")
-                back_pro_img = Image.fromarray(back_pro.astype(np.uint8),mode="L")
-                
-                sem_pro_img.save("/home/user/text_inr/detectron2/projects/PointRend/lr_images/coarse_output/coarse_output/fore_a00045.jpg")
-                back_pro_img.save("/home/user/text_inr/detectron2/projects/PointRend/lr_images/coarse_output/coarse_output/back_a00045.jpg")
-                """
-                # img = transform(outputs)
-                
-                # 여기
-                
-                # label = np.array(outputs.cpu())
-                # label = np.where(label==1,255,label)
-                # img = Image.fromarray(label.astype(np.uint8)).convert('P')
-                # img.save("/home/user/text_inr/detectron2/projects/PointRend/lr_images/residual/lr/lr_image{}_c02642.png".format(i))
-                # print("sem_seg_logits",sem_seg_logits.shape)
                 
 
                 uncertainty_map = calculate_uncertainty(sem_seg_logits)
                 # 여기 아랫부분이 uncertainty map 생성
                 
-                """
-                print("uncertatinty_map shape",uncertainty_map.shape)
-                probabilities = transform_to_probability(uncertainty_map, temperature=0.5).squeeze().squeeze()
-                min_value = torch.min(uncertainty_map)
-                max_value = torch.max(uncertainty_map)
-                normalized = (uncertainty_map - min_value) / (max_value - min_value)
-                pro = np.array(normalized.squeeze().squeeze().cpu())*255
-                print("pro shape",pro.shape)
-                plt.imshow(pro, cmap="jet")
-                plt.axis('off')
-                # plt.colorbar()
-                plt.savefig("/home/user/text_inr/detectron2/projects/PointRend/lr_images/yesim/uncertainty/a00012.png",bbox_inches='tight', pad_inches=0, dpi=300)
-                """
-                # pro_img = Image.fromarray((pro).astype(np.uint8)).convert('P')
-                # pro_img.save("/home/user/text_inr/detectron2/projects/PointRend/lr_images/coarse_output/uncertainty_map/a00003.png")
-                # print("softmax_uncertaintymap",uncertainty_map)
-                # print("uncertainty map",uncertainty_map.shape)
-                # num_points = int((sem_seg_logits.size(-2)*sem_seg_logits.size(-1)))
-                num_points = 10000
-                # print("sem_seg_logit size",sem_seg_logits.shape)
-                # print("num_points shape",num_points)
+                
+                
                 
                 # point_indices, point_coords = sample_sdf_map_points(attention2,num_points)
                 point_indices, point_coords =get_uncertain_point_coords_on_grid(
-                   uncertainty_map, num_points # self.subdivision_num_points
+                   uncertainty_map,self.subdivision_num_points
                     )
                 
                 # torch.save(point_coords.cpu(),"/home/user/text_inr/detectron2/projects/PointRend/lr_images/yesim/point/a00012.pt")
