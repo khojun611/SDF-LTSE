@@ -33,47 +33,29 @@ import PIL
 from PIL import Image
 from detectron2.utils.visualizer import ColorMode
 import natsort
+
+# Define the paths as variables
+weight_path = "/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/output/model_0039999.pth"
+config_file = "/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/configs/SemanticSegmentation/pointrend_semantic_R_101_FPN_1x_cityscapes.yaml"
+image_path = "/home/user/text_inr/detectron2/projects/PointRend/datasets/textseg/test"
+save_path = "/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/new_quantitative/api"
+
 cfg = get_cfg()
 # Add PointRend-specific config
 point_rend.add_pointrend_config(cfg)
 # Load a config from file
-cfg.merge_from_file("/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/configs/SemanticSegmentation/pointrend_semantic_R_101_FPN_1x_cityscapes.yaml")
+cfg.merge_from_file(config_file)
 cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # set threshold for this model
-# Use a model from PointRend model zoo: https://github.com/facebookresearch/detectron2/tree/master/projects/PointRend#pretrained-models
-# cfg.MODEL.WEIGHTS = "/home/user/text_inr/detectron2/projects/PointRend/output_list/output_totaltext/model_0029999.pth"
-cfg.MODEL.WEIGHTS = "/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/output/model_0039999.pth"
+cfg.MODEL.WEIGHTS = weight_path
 predictor = DefaultPredictor(cfg)
 
-image_path = "/home/user/text_inr/detectron2/projects/PointRend/datasets/textseg/test" # 
 image_list = natsort.natsorted(os.listdir(image_path))
 
-for i,d in enumerate(image_list):
-    im = cv2.imread(os.path.join(image_path,d))
+for i, d in enumerate(image_list):
+    im = cv2.imread(os.path.join(image_path, d))
     outputs = predictor(im)
-    '''
-    print(outputs.shape)
-    probabilities = torch.nn.functional.softmax(outputs, dim=1)
-
-    # dim=1의 첫 번째 채널(1)에서의 confidence map 선택
-    confidence_map = probabilities[:, 1, :, :]
-
-    # confidence map을 numpy 배열로 변환
-    confidence_map_np = confidence_map.squeeze().cpu().detach().numpy()
-
-    # 이미지 시각화
-    plt.imshow(confidence_map_np, cmap='jet', interpolation='bilinear')
-    plt.colorbar()  # 색상 막대 추가
-    plt.title("Confidence Map Visualization")
-    plt.savefig("/mnt/data/confidence_map_cmap/{}.png".format(image_list[i][:-4]))  # 이미지 파일로 저장
-    '''
-    outputs = torch.argmax(outputs['sem_seg'],dim=0)
-    label = np.array(outputs.cpu())*255
-    # label = np.where(label==1,255,label)
+    outputs = torch.argmax(outputs['sem_seg'], dim=0)
+    label = np.array(outputs.cpu()) * 255
     png = Image.fromarray(label.astype(np.uint8)).convert('P')
-    # textseg
-    # png.save("/home/user/text_inr/detectron2/projects/PointRend/visual_results/pointrend_total_text/{}.png".format(d["file_name"][-10:].strip(".jpg")))
-    png.save("/home/user/text_inr/pointrend2/SDF-LTSE/projects/PointRend/new_quantitative/api/{}.png".format(image_list[i][:-4]))
-print ("done")
-
-
-
+    png.save(os.path.join(save_path, f"{image_list[i][:-4]}.png"))
+print("done")
